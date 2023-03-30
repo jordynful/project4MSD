@@ -5,7 +5,16 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import com.opencsv.CSVReader;
+
 
 public class MainActivity extends AppCompatActivity {
     private AppData appData = null;
@@ -25,6 +34,38 @@ public class MainActivity extends AppCompatActivity {
         pager.setOrientation(
                 ViewPager2.ORIENTATION_HORIZONTAL );
         pager.setAdapter( avpAdapter );
+
+
+        try {
+            // Open the CSV data file in the assets folder
+            InputStream in_s = getAssets().open( "country_continent.csv" );
+
+
+            // set up margins for each TextView in the table layout
+            android.widget.TableRow.LayoutParams layoutParams =
+                    new TableRow.LayoutParams( TableRow.LayoutParams.WRAP_CONTENT,
+                            TableRow.LayoutParams.WRAP_CONTENT );
+            layoutParams.setMargins(20, 0, 20, 0);
+
+            // read the CSV data
+            CSVReader reader = new CSVReader( new InputStreamReader( in_s ) );
+            String[] nextRow;
+            while( ( nextRow = reader.readNext() ) != null ) {
+                for( int i = 0; i < nextRow.length; i++ ) {
+
+
+                    System.out.println(nextRow[i]);
+                }
+               System.out.println(nextRow);
+
+                }
+
+                // add the next row to the table layout
+
+        } catch (Exception e) {
+            Log.e( TAG, e.toString() );
+        }
+
 
 
         class JobLeadDBWriter extends AsyncTask<Country, Country> {
