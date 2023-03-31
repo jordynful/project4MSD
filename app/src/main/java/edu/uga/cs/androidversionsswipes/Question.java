@@ -1,15 +1,20 @@
 package edu.uga.cs.androidversionsswipes;
 
-public class Country {
+
+public class Question {
     private long   id;
     private String country;
     private String continent;
+    private String choice1;
+    private String choice2;
 
 
-    public Country( String country, String continent) {
-        this.id = -1;  // the primary key id will be set by a setter method
+
+    public Question(String country, String continent) {
+        this.id = -1;
         this.country = country;
         this.continent = continent;
+    // the primary key id will be set by a setter method
     }
 
     public long getId()
@@ -48,5 +53,4 @@ public class Country {
         return id + ": " + country + " " + continent;
     }
 }
-
 

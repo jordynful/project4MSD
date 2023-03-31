@@ -33,10 +33,14 @@ import android.util.Log;
         // Define all names (strings) for table and column names.
         // This will be useful if we want to change these names later.
         public static final String TABLE_COUNTRIES = "jobleads";
+
+        public static final String TABLE_QUIZZES = "quizzes";
         public static final String JOBLEADS_COLUMN_ID = "_id";
         public static final String JOBLEADS_COLUMN_COUNTRY = "country";
         public static final String JOBLEADS_COLUMN_CONTINENT = "continent";
-
+        public static final String QUIZZES_COLUMN_ID = "_id";
+        public static final String QUIZZES_COLUMN_DATE = "Date";
+        public static final String QUIZZES_COLUMN_SCORE = "score";
 
         // This is a reference to the only instance for the helper.
         private static DBHelper helperInstance;
@@ -49,6 +53,13 @@ import android.util.Log;
                         + JOBLEADS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                         + JOBLEADS_COLUMN_COUNTRY + " TEXT, "
                         + JOBLEADS_COLUMN_CONTINENT + " TEXT "
+                        + ")";
+
+        private static final String CREATE_QUIZZES =
+                "create table " + TABLE_QUIZZES + " ("
+                        + QUIZZES_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + QUIZZES_COLUMN_DATE + " TEXT, "
+                        + QUIZZES_COLUMN_SCORE + " TEXT "
                         + ")";
 
         // Note that the constructor is private!
@@ -74,6 +85,8 @@ import android.util.Log;
         public void onCreate( SQLiteDatabase db ) {
             db.execSQL( CREATE_COUNTRIES );
             Log.d( DEBUG_TAG, "Table " + TABLE_COUNTRIES + " created" );
+            db.execSQL( CREATE_QUIZZES );
+            Log.d( DEBUG_TAG, "Table " + TABLE_QUIZZES + " created" );
         }
 
         // We should override onUpgrade method, which will be used to upgrade the database if
@@ -82,8 +95,10 @@ import android.util.Log;
         @Override
         public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
             db.execSQL( "drop table if exists " + TABLE_COUNTRIES );
+            db.execSQL( "drop table if exists " + TABLE_QUIZZES );
             onCreate( db );
             Log.d( DEBUG_TAG, "Table " + TABLE_COUNTRIES + " upgraded" );
+            Log.d( DEBUG_TAG, "Table " + TABLE_QUIZZES + " upgraded" );
         }
     }
 
