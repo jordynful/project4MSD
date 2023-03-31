@@ -68,7 +68,7 @@ public class AppData {
 
                 while( cursor.moveToNext() ) {
 
-                    if( cursor.getColumnCount() >= 5) {
+                    if( cursor.getColumnCount() >= 2) {
 
                         // get all attribute values of this job lead
                         columnIndex = cursor.getColumnIndex(DBHelper.JOBLEADS_COLUMN_ID );
@@ -102,6 +102,7 @@ public class AppData {
             }
         }
         // return a list of retrieved job leads
+        Log.d( DEBUG_TAG, "counties : " + countries );
         return countries;
     }
 

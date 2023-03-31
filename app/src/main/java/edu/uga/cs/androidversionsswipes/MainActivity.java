@@ -28,9 +28,10 @@ public class MainActivity extends AppCompatActivity {
         // in the onCreate callback (the job leads review activity is started).
         @Override
         protected List<Country> doInBackground( Void... params ) {
+            appData.open();
             Log.d( TAG, "DBReader: trying to retrieve: ");
             List<Country> countryList = appData.retrieveAllCountries();
-
+            System.out.println(countryList);
             Log.d( TAG, "DBReader: Job leads retrieved: " + countryList.size() );
 //            appData = new AppData( this);
 
@@ -38,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
             // Note that onResume() hasn't been called yet, so the db open in it
             // was not called yet!
             if (countryList.size() == 0) {
-                appData.open();
+
                 try {
                     // Open the CSV data file in the assets folder
                     InputStream in_s = getAssets().open("country_continent.csv");
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < nextRow.length; i++) {
 
 
-                            System.out.println(nextRow[i]);
+
                         }
                         String country = nextRow[0].toString();
                         String continent = nextRow[1].toString();
@@ -143,43 +144,6 @@ public class MainActivity extends AppCompatActivity {
 //        if (countriesList.size() == 0) {
 //            System.out.println("countries db is empty rn");
 //        }
-
-        try {
-            // Open the CSV data file in the assets folder
-            InputStream in_s = getAssets().open( "country_continent.csv" );
-
-
-            // set up margins for each TextView in the table layout
-            android.widget.TableRow.LayoutParams layoutParams =
-                    new TableRow.LayoutParams( TableRow.LayoutParams.WRAP_CONTENT,
-                            TableRow.LayoutParams.WRAP_CONTENT );
-            layoutParams.setMargins(20, 0, 20, 0);
-
-            // read the CSV data
-            CSVReader reader = new CSVReader( new InputStreamReader( in_s ) );
-            String[] nextRow;
-            while( ( nextRow = reader.readNext() ) != null ) {
-                for( int i = 0; i < nextRow.length; i++ ) {
-
-
-                    System.out.println(nextRow[i]);
-                }
-                String country = nextRow[0].toString();
-                String continent = nextRow[1].toString();
-
-//                Country country1 = new Country( country, continent);
-//
-//                // Store this new job lead in the database asynchronously,
-//                // without blocking the UI thread.
-//                new DBWriter().execute( country1 );
-
-                }
-
-                // add the next row to the table layout
-
-        } catch (Exception e) {
-            Log.e( TAG, e.toString() );
-        }
 
 
 
