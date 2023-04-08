@@ -23,13 +23,13 @@ public class Question {
         choice1 = continents[two];
         //access db to get countries for these indexes
         while (choice1 == this.country) {
-            two = random.nextInt(196);
+            two = random.nextInt(8);
             choice1 = continents[two];
         }
-        int three = random.nextInt(196);
+        int three = random.nextInt(8);
         choice2 = continents[three];
         while (choice2 == this.country || three == two) {
-            three = random.nextInt(196);
+            three = random.nextInt(8);
             choice2 = continents[three];
         }
 
