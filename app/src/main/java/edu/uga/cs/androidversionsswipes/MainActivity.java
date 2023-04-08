@@ -20,6 +20,8 @@ import com.opencsv.CSVReader;
 
 public class MainActivity extends AppCompatActivity {
     private AppData appData = null;
+    public List<Country> listOfCountries;
+    private static MainActivity instance = null;
     private static final String TAG = "MainActivity";
    class DBReader extends AsyncTask<Void, List<Country>> {
         // This method will run as a background process to read from db.
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
             }//if countrylist.size() == 0
-
+            listOfCountries = countryList;
             return countryList;
         }
 
@@ -147,7 +149,15 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        instance = this;
 
+    }
 
+    public List<Country> getListOfCountries() {
+       return listOfCountries;
+    }
+
+    public static MainActivity getInstance() {
+        return instance;
     }
 }
