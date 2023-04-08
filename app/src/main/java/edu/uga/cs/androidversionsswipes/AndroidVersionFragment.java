@@ -1,5 +1,6 @@
 package edu.uga.cs.androidversionsswipes;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -7,13 +8,40 @@ import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.content.Intent;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import android.widget.Toast;
 
 
 public class AndroidVersionFragment extends Fragment {
-
-    // Array of Android version code names
+    MainActivity main = (MainActivity)getActivity();
+    //appData.open();
+    private AppData appData = null;
+    private static ArrayList<String> selectedCountry = new ArrayList<String>();
+    private static ArrayList<String> correctAnswers = new ArrayList<String>();
+    private static final String[] allContinents = {"Asia", "Africa", "North America", "South America", "Antarctica", "Europe", "Australia"};
+    private Button option1Button;
+    private Button option2Button;
+    private Button option3Button;
+    private RadioGroup quizOptions;
+    private RadioButton option1RadioBtn;
+    private String option2RadioBtn;
+    private String option3RadioBtn;
+    private String option1;
+    private String option2;
+    private String option3;
+    private String correctAnswer;
     private static final String[] androidVersions = {
             "13",
             "12",
@@ -49,17 +77,47 @@ public class AndroidVersionFragment extends Fragment {
     };
 
     // which Android version to display in the fragment
-    private int versionNum;
+    //private int versionNum;
+    private int quizID;
+    private int quizNum;
+    private static List<Country> countryList;
+    private static int questionNum = 0;
 
     public AndroidVersionFragment() {
         // Required empty public constructor
     }
 
+    public void PrepareSelectedCountry() {
+        Random rand = new Random();
+        Set<Integer> randomNums = new HashSet<Integer>();
 
-    public static AndroidVersionFragment newInstance( int versionNum ) {
+        while (randomNums.size() < 6) {
+            int num = rand.nextInt(countryList.size()) + 1;
+            randomNums.add(num);
+        }
+    }
+
+    public static AndroidVersionFragment newInstance( int quizID, List<Country> countryList) {
+        //int questionNum = 0;
         AndroidVersionFragment fragment = new AndroidVersionFragment();
+        fragment.quizID = quizID;
+        fragment.countryList = countryList;
+
+        Random rand = new Random();
+        Set<Integer> randomNums = new HashSet<Integer>();
+
+        while (randomNums.size() < 6) {
+            int num = rand.nextInt(countryList.size()) + 1;
+            randomNums.add(num);
+            if (selectedCountry.contains(countryList.get(num).getCountry())) {
+                continue;
+            } else {
+                selectedCountry.add(countryList.get(num).getCountry());
+                correctAnswers.add(countryList.get(num).getContinent());
+            }
+        }
         Bundle args = new Bundle();
-        args.putInt( "versionNum", versionNum );
+        args.putInt( "quizID", quizID);
         fragment.setArguments( args );
         return fragment;
     }
@@ -68,30 +126,137 @@ public class AndroidVersionFragment extends Fragment {
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         if( getArguments() != null ) {
-            versionNum = getArguments().getInt( "versionNum" );
+            //versionNum = getArguments().getInt( "versionNum" );
+            quizID = getArguments().getInt( "quizID" );
+            //int questionNum = getArguments().getInt("questionNum");
+        }
+    }
+
+    @SuppressLint("MissingInflatedId")
+    @Override
+    public View onCreateView( LayoutInflater inflater, ViewGroup container,
+                              Bundle savedInstanceState ) {
+
+        View rootView = inflater.inflate(R.layout.fragment_android_version, container, false );
+//        questionView = rootView.findViewById(R.id.question_view);
+        option1Button = rootView.findViewById(R.id.option1_button);
+        option2Button = rootView.findViewById(R.id.option2_button);
+        option3Button = rootView.findViewById(R.id.option3_button);
+        //quizOptions = rootView.findViewById(R.id.optionsRadioGroup);
+        //option1RadioBtn = rootView.findViewById(R.id.radioButton);
+        //option2RadioBtn = rootView.findViewById(R.id.radioButton2);
+        //option3RadioBtn = rootView.findViewById(R.id.radioButton3);
+
+        Random random = new Random();
+        int randomNumber = random.nextInt(3) + 1;
+        if (randomNumber==1) {
+            correctAnswer = correctAnswers.get(questionNum);
+            //System.out.println("CORRECTANSWER"+correctAnswer);
+            option1 = correctAnswers.get(questionNum);
+            Random random1 = new Random();
+            int index1 = -1, index2 = -1;
+            while (index1 == -1 || allContinents[index1].equals(correctAnswer)) {
+                index1 = random1.nextInt(allContinents.length);
+            }
+            while (index2 == -1 || index2 == index1 || allContinents[index2].equals(correctAnswer)) {
+                index2 = random1.nextInt(allContinents.length);
+            }
+            //option2RadioBtn = allContinents[index1];
+            //option3RadioBtn = allContinents[index2];
+
+            option2 = allContinents[index1];
+            option3 = allContinents[index2];
+        }else if (randomNumber==2) {
+            correctAnswer = correctAnswers.get(questionNum);
+            option2 = correctAnswers.get(questionNum);
+            Random random1 = new Random();
+            int index1 = -1, index2 = -1;
+            while (index1 == -1 || allContinents[index1].equals(correctAnswer)) {
+                index1 = random1.nextInt(allContinents.length);
+            }
+            while (index2 == -1 || index2 == index1 || allContinents[index2].equals(correctAnswer)) {
+                index2 = random1.nextInt(allContinents.length);
+            }
+            option1 = allContinents[index1];
+            option3 = allContinents[index2];
+        }else if (randomNumber==3) {
+            correctAnswer = correctAnswers.get(questionNum);
+            option3 = correctAnswers.get(questionNum);
+            Random random1 = new Random();
+            int index1 = -1, index2 = -1;
+            while (index1 == -1 || allContinents[index1].equals(correctAnswer)) {
+                index1 = random1.nextInt(allContinents.length);
+            }
+            while (index2 == -1 || index2 == index1 || allContinents[index2].equals(correctAnswer)) {
+                index2 = random1.nextInt(allContinents.length);
+            }
+            option1 = allContinents[index1];
+            option2 = allContinents[index2];
+        }
+
+//        questionView.setText(question);
+        option1Button.setText(option1);
+        option2Button.setText(option2);
+        option3Button.setText(option3);
+
+        option1Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showResult(option1.equals(correctAnswer));
+            }
+        });
+
+        option2Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showResult(option2.equals(correctAnswer));
+            }
+        });
+
+        option3Button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showResult(option3.equals(correctAnswer));
+            }
+        });
+        return rootView;
+
+    }
+
+    private void showResult(boolean isCorrect) {
+        if (isCorrect) {
+            Toast.makeText(getContext(), "Correct！", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "Wrong! Try Again!", Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container,
-                              Bundle savedInstanceState ) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_android_version, container, false );
-    }
-
-    @Override
     public void onViewCreated( @NonNull View view, Bundle savedInstanceState ) {
-        //public void onActivityCreated(Bundle savedInstanceState) {
-        super.onViewCreated( view, savedInstanceState );
+        //public void onActivityCreated(Bundle savedInstanceState){\
+        System.out.println("CORRECTANSWER"+correctAnswer);
 
-        TextView titleView = view.findViewById( R.id.titleView );
-        TextView highlightsView = view.findViewById( R.id.highlightsView );
+        questionNum+=1;
+        System.out.println("Number: "+questionNum);
+        if(questionNum == 7) {
+            Intent intent = new Intent(getActivity(),EndActivity.class);
+            startActivity(intent);
 
-        titleView.setText( androidVersions[ versionNum ] );
-        highlightsView.setText( androidVersionsInfo[ versionNum ] );
+        } else {
+            super.onViewCreated(view, savedInstanceState);
+            TextView titleView = view.findViewById(R.id.titleView);
+            TextView highlightsView = view.findViewById(R.id.highlightsView);
+
+            titleView.setText(androidVersions[quizID]);
+            highlightsView.setText("Q" + questionNum + "\nAugust 16, 2022\n\nName the continent on which " + selectedCountry.get(questionNum) + " is located ?");
+//            highlightsView.setText(androidVersionsInfo[quizID]);
+        }
     }
 
     public static int getNumberOfVersions() {
-        return androidVersions.length;
+        return 7;
+//        return androidVersions.length;
     }
+
+
 }
