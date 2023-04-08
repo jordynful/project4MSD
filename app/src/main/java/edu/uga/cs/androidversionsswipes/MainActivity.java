@@ -6,6 +6,8 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -21,6 +23,7 @@ import com.opencsv.CSVReader;
 public class MainActivity extends AppCompatActivity {
     private AppData appData = null;
     public List<Country> listOfCountries;
+    int totalCountryNum;
     private static MainActivity instance = null;
     private static final String TAG = "MainActivity";
    class DBReader extends AsyncTask<Void, List<Country>> {
@@ -34,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d( TAG, "DBReader: trying to retrieve: ");
             List<Country> countryList = appData.retrieveAllCountries();
             System.out.println(countryList);
+            totalCountryNum = countryList.size();
             Log.d( TAG, "DBReader: Job leads retrieved: " + countryList.size() );
 //            appData = new AppData( this);
 
@@ -121,32 +125,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
-        //this is where we will read in the data from database or csv file... start with csv file
-
-        setContentView( R.layout.activity_main );
-
-        ViewPager2 pager = findViewById( R.id.viewpager );
-        AndroidVersionsPagerAdapter avpAdapter = new
-                AndroidVersionsPagerAdapter(
-                getSupportFragmentManager(), getLifecycle() );
-        pager.setOrientation(
-                ViewPager2.ORIENTATION_HORIZONTAL );
-        pager.setAdapter( avpAdapter );
-
-//        List<Country> countriesList = appData.retrieveAllCountries();
-        appData = new AppData( this);
-
+        appData = new AppData( MainActivity.this);
         // Open that database for reading of the full list of job leads.
         // Note that onResume() hasn't been called yet, so the db open in it
         // was not called yet!
         appData.open();
         new DBReader().execute();
+        System.out.println("Total: "+totalCountryNum);
 
-//        if (countriesList.size() == 0) {
-//            System.out.println("countries db is empty rn");
-//        }
+        //this is where we will read in the data from database or csv file... start with csv file
+        System.out.println("we're in onCreate hehe");
+        setContentView( R.layout.activity_main );
+        Button startButton = (Button)findViewById(R.id.startButton);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startButton.setVisibility(startButton.GONE);
+                ViewPager2 pager = findViewById( R.id.viewpager );
+                AndroidVersionsPagerAdapter avpAdapter = new AndroidVersionsPagerAdapter(getSupportFragmentManager(), getLifecycle());
+                avpAdapter.totalCountryNum = totalCountryNum;
+                avpAdapter.countryList = listOfCountries;
+                pager.setOrientation(ViewPager2.ORIENTATION_HORIZONTAL );
+                pager.setAdapter( avpAdapter );
+                System.out.println("APP DATA:"+appData);
 
+//                appData = new AppData( MainActivity.this);
+//            // Open that database for reading of the full list of job leads.
+//            // Note that onResume() hasn't been called yet, so the db open in it
+//            // was not called yet!
+//                appData.open();
+//                new DBReader().execute();
+            }
+        });
 
 
         instance = this;
