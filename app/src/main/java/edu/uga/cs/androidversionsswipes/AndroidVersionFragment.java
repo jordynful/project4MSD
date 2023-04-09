@@ -129,8 +129,6 @@ public class AndroidVersionFragment extends Fragment {
     public static AndroidVersionFragment newInstance( int quizID, List<Country> countryList, Quiz quiz1) {
 
         //int questionNum = 0;
-
-
         AndroidVersionFragment fragment = new AndroidVersionFragment();
         fragment.quizID = quizID;
         fragment.countryList = countryList;
@@ -143,10 +141,13 @@ public class AndroidVersionFragment extends Fragment {
             int num = rand.nextInt(countryList.size());
             randomNums.add(num);
             if (selectedCountry.contains(countryList.get(num).getCountry())) {
+
                 continue;
+
             } else {
                 selectedCountry.add(countryList.get(num).getCountry());
                 correctAnswers.add(countryList.get(num).getContinent());
+                System.out.print(" Creation: " + countryList.get(num).getContinent() + " " +countryList.get(num).getCountry() );
             }
         }
         Bundle args = new Bundle();
@@ -184,8 +185,9 @@ public class AndroidVersionFragment extends Fragment {
         option3RadioBtn = rootView.findViewById(R.id.radioButton3);
 
         Random random = new Random();
-        int randomNumber = random.nextInt(3) + 1;
-        if (randomNumber==1) {
+        int randomNumber = random.nextInt(3);
+        if (randomNumber==0) {
+            System.out.println("Question number " + questionNum);
             correctAnswer = correctAnswers.get(questionNum);
             //System.out.println("CORRECTANSWER"+correctAnswer);
             option1 = correctAnswers.get(questionNum);
@@ -202,7 +204,8 @@ public class AndroidVersionFragment extends Fragment {
 
             option2 = allContinents[index1];
             option3 = allContinents[index2];
-        }else if (randomNumber==2) {
+        }else if (randomNumber==1) {
+            System.out.println("Question number " + questionNum);
             correctAnswer = correctAnswers.get(questionNum);
             option2 = correctAnswers.get(questionNum);
             Random random1 = new Random();
@@ -215,7 +218,8 @@ public class AndroidVersionFragment extends Fragment {
             }
             option1 = allContinents[index1];
             option3 = allContinents[index2];
-        }else if (randomNumber==3) {
+        }else if (randomNumber==2) {
+            System.out.println("Question number " + questionNum);
             correctAnswer = correctAnswers.get(questionNum);
             option3 = correctAnswers.get(questionNum);
             Random random1 = new Random();
@@ -295,9 +299,9 @@ public class AndroidVersionFragment extends Fragment {
         //public void onActivityCreated(Bundle savedInstanceState){\
         System.out.println("CORRECTANSWER"+correctAnswer);
 
-        questionNum+=1;
+
         System.out.println("Number: "+questionNum);
-        if(questionNum == 7) {
+        if(questionNum == 6) {
             //store results here
             System.out.print("quiz " + quiz);
             new DBWriterQuiz().execute( quiz );
@@ -311,8 +315,9 @@ public class AndroidVersionFragment extends Fragment {
             TextView highlightsView = view.findViewById(R.id.highlightsView);
 
             titleView.setText(androidVersions[quizID]);
-            highlightsView.setText("Q" + questionNum + "\nAugust 16, 2022\n\nName the continent on which " + selectedCountry.get(questionNum) + " is located ?");
+            highlightsView.setText("Q" + questionNum + "\n\n\nName the continent on which " + selectedCountry.get(questionNum) + " is located ?");
 //            highlightsView.setText(androidVersionsInfo[quizID]);
+            questionNum+=1;
         }
     }
 
