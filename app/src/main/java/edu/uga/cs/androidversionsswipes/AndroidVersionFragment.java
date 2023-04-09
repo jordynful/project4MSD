@@ -6,6 +6,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -23,7 +24,8 @@ import java.util.Set;
 
 import android.widget.Toast;
 
-
+import java.time.LocalDate;
+import java.util.Calendar;
 public class AndroidVersionFragment extends Fragment {
     MainActivity main = (MainActivity)getActivity();
     //appData.open();
@@ -36,8 +38,8 @@ public class AndroidVersionFragment extends Fragment {
     private Button option3Button;
     private RadioGroup quizOptions;
     private RadioButton option1RadioBtn;
-    private String option2RadioBtn;
-    private String option3RadioBtn;
+    private RadioButton option2RadioBtn;
+    private RadioButton option3RadioBtn;
     private String option1;
     private String option2;
     private String option3;
@@ -79,10 +81,37 @@ public class AndroidVersionFragment extends Fragment {
     // which Android version to display in the fragment
     //private int versionNum;
     private int quizID;
+    private Quiz quiz;
+
     private int quizNum;
     private static List<Country> countryList;
     private static int questionNum = 0;
+    class DBWriterQuiz extends AsyncTask<Quiz, Quiz> {
 
+        // This method will run as a background process to write into db.
+        // It will be automatically invoked by Android, when we call the execute method
+        // in the onClick listener of the Save button.
+        @Override
+        protected Quiz doInBackground( Quiz... quizzes ) {
+            System.out.print(quizzes[0]);
+            appData.storeQuiz( quizzes[0]);
+            return quizzes[0];
+        }
+
+        // This method will be automatically called by Android once the writing to the database
+        // in a background process has finished.  Note that doInBackground returns a JobLead object.
+        // That object will be passed as argument to onPostExecute.
+        // onPostExecute is like the notify method in an asynchronous method call discussed in class.
+        @Override
+        protected void onPostExecute( Quiz quiz ) {
+            // Show a quick confirmation message
+
+            // Clear the EditTexts for next use.
+
+
+            Log.d( "VersonFragments", "Quiz saved: " + quiz );
+        }
+    }
     public AndroidVersionFragment() {
         // Required empty public constructor
     }
@@ -97,17 +126,21 @@ public class AndroidVersionFragment extends Fragment {
         }
     }
 
-    public static AndroidVersionFragment newInstance( int quizID, List<Country> countryList) {
+    public static AndroidVersionFragment newInstance( int quizID, List<Country> countryList, Quiz quiz1) {
+
         //int questionNum = 0;
+
+
         AndroidVersionFragment fragment = new AndroidVersionFragment();
         fragment.quizID = quizID;
         fragment.countryList = countryList;
-
+        fragment.quiz = quiz1;
         Random rand = new Random();
+
         Set<Integer> randomNums = new HashSet<Integer>();
 
         while (randomNums.size() < 6) {
-            int num = rand.nextInt(countryList.size()) + 1;
+            int num = rand.nextInt(countryList.size());
             randomNums.add(num);
             if (selectedCountry.contains(countryList.get(num).getCountry())) {
                 continue;
@@ -128,6 +161,7 @@ public class AndroidVersionFragment extends Fragment {
         if( getArguments() != null ) {
             //versionNum = getArguments().getInt( "versionNum" );
             quizID = getArguments().getInt( "quizID" );
+
             //int questionNum = getArguments().getInt("questionNum");
         }
     }
@@ -136,16 +170,18 @@ public class AndroidVersionFragment extends Fragment {
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container,
                               Bundle savedInstanceState ) {
+        main = (MainActivity) getActivity();
+        appData = new AppData(getContext());
+        appData.open();
 
         View rootView = inflater.inflate(R.layout.fragment_android_version, container, false );
 //        questionView = rootView.findViewById(R.id.question_view);
         option1Button = rootView.findViewById(R.id.option1_button);
-        option2Button = rootView.findViewById(R.id.option2_button);
-        option3Button = rootView.findViewById(R.id.option3_button);
-        //quizOptions = rootView.findViewById(R.id.optionsRadioGroup);
-        //option1RadioBtn = rootView.findViewById(R.id.radioButton);
-        //option2RadioBtn = rootView.findViewById(R.id.radioButton2);
-        //option3RadioBtn = rootView.findViewById(R.id.radioButton3);
+
+        quizOptions = rootView.findViewById(R.id.optionsRadioGroup);
+        option1RadioBtn = rootView.findViewById(R.id.radioButton);
+        option2RadioBtn = rootView.findViewById(R.id.radioButton2);
+        option3RadioBtn = rootView.findViewById(R.id.radioButton3);
 
         Random random = new Random();
         int randomNumber = random.nextInt(3) + 1;
@@ -195,39 +231,62 @@ public class AndroidVersionFragment extends Fragment {
         }
 
 //        questionView.setText(question);
-        option1Button.setText(option1);
-        option2Button.setText(option2);
-        option3Button.setText(option3);
+        option1RadioBtn.setText(option1);
+        option2RadioBtn.setText(option2);
+        option3RadioBtn.setText(option3);
 
         option1Button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showResult(option1.equals(correctAnswer));
+
+                int selectedOptionId = quizOptions.getCheckedRadioButtonId();
+                if (selectedOptionId == option1RadioBtn.getId()) {
+                    showResult(option1.equals(correctAnswer));
+                    option1RadioBtn.setEnabled(false);
+                    option2RadioBtn.setEnabled(false);
+                    option3RadioBtn.setEnabled(false);
+                    option1Button.setClickable(false);
+                    // Option 1 is selected
+                } else if (selectedOptionId == option2RadioBtn.getId()) {
+                    showResult(option2.equals(correctAnswer));
+                    option1RadioBtn.setEnabled(false);
+                    option2RadioBtn.setEnabled(false);
+                    option3RadioBtn.setEnabled(false);
+                    option1Button.setClickable(false);
+                    // Option 2 is selected
+                } else if (selectedOptionId == option3RadioBtn.getId()) {
+                    // Option 3 is selected
+                    showResult(option3.equals(correctAnswer));
+                    option1RadioBtn.setEnabled(false);
+                    option2RadioBtn.setEnabled(false);
+                    option3RadioBtn.setEnabled(false);
+                    option1Button.setClickable(false);
+                } else {
+                    Toast.makeText(getContext(), "Please select an answer.", Toast.LENGTH_SHORT).show();
+                    // No option is selected
+                }
+//                option1RadioBtn.setEnabled(false);
+//                option2RadioBtn.setEnabled(false);
+//                option3RadioBtn.setEnabled(false);
+//                option1Button.setClickable(false);
+
             }
         });
 
-        option2Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showResult(option2.equals(correctAnswer));
-            }
-        });
 
-        option3Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showResult(option3.equals(correctAnswer));
-            }
-        });
+
+
         return rootView;
 
     }
 
     private void showResult(boolean isCorrect) {
         if (isCorrect) {
+            quiz.setScore(quiz.getScore() + 1);
+            System.out.print("score " + quiz.getScore());
             Toast.makeText(getContext(), "Correct！", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(getContext(), "Wrong! Try Again!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Incorrect!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -239,7 +298,11 @@ public class AndroidVersionFragment extends Fragment {
         questionNum+=1;
         System.out.println("Number: "+questionNum);
         if(questionNum == 7) {
+            //store results here
+            System.out.print("quiz " + quiz);
+            new DBWriterQuiz().execute( quiz );
             Intent intent = new Intent(getActivity(),EndActivity.class);
+            intent.putExtra("score",quiz.getScore() );
             startActivity(intent);
 
         } else {

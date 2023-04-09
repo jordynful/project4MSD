@@ -142,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 startButton.setVisibility(startButton.GONE);
                 ViewPager2 pager = findViewById( R.id.viewpager );
+
                 AndroidVersionsPagerAdapter avpAdapter = new AndroidVersionsPagerAdapter(getSupportFragmentManager(), getLifecycle());
                 avpAdapter.totalCountryNum = totalCountryNum;
                 avpAdapter.countryList = listOfCountries;

@@ -1,7 +1,9 @@
 package edu.uga.cs.androidversionsswipes;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
@@ -15,12 +17,15 @@ public class EndActivity  extends AppCompatActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-
+        Intent intent = getIntent();
+        int score = intent.getIntExtra("score",0);
         //this is where we will read in the data from database or csv file... start with csv file
         System.out.println("we're in EndActivity onCreate hehe");
         setContentView( R.layout.activity_end);
         Button startButton2 = (Button)findViewById(R.id.startButton2);
         Button resultButton = (Button)findViewById(R.id.resultButton);
+        TextView scoreText = findViewById(R.id.textView4);
+        scoreText.setText(String.valueOf(score));
         startButton2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -46,6 +51,8 @@ public class EndActivity  extends AppCompatActivity {
                 System.out.println("===============resultbttn");
                 startButton2.setVisibility(startButton2.GONE);
                 resultButton.setVisibility(resultButton.GONE);
+                Intent intent = new Intent(EndActivity.this,ResultActivity.class);
+                startActivity(intent);
             }});
     }
 
